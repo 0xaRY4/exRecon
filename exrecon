@@ -1,0 +1,117 @@
+#!/bin/bash
+# exRecon - Advanced Subdomain Recon Tool
+# Author: aRY4
+# GitHub: https://github.com/aRY4/exRecon
+
+# =====================
+#  CUSTOM ASCII BANNER
+# =====================
+clear
+echo ""
+echo ".d8888b. dP.  .dP 88d888b. .d8888b. .d8888b. .d8888b. 88d888b."
+echo "88ooood8  \`8bd8'  88'  \`88 88ooood8 88'  \`\"\" 88'  \`88 88'  \`88"
+echo "88.  ...  .d88b.  88       88.  ... 88.  ... 88.  .88 88    88"
+echo "\`88888P' dP'  \`dP dP       \`88888P' \`88888P' \`88888P' dP    dP"
+echo ""
+echo "                          by aRY4"
+echo "------------------------------------------------------------"
+
+# Check if target domain is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <domain>"
+    exit 1
+fi
+
+domain=$1
+
+# =====================
+#  RECON PHASES
+# =====================
+
+# Phase 1: Subdomain Enumeration
+function phase1 {
+    echo -e "\n\033[1;34m[+] PHASE 1: Subdomain Enumeration\033[0m"
+    
+    echo -n -e "[*] Running Subfinder........."
+    subfinder -d "$domain" > ./subfinder-subdomains.txt 2>/dev/null
+    echo -e " \033[1;32mDone!\033[0m"
+    
+    echo -n -e "[*] Running github-subdomains."
+    github-subdomains -d "$domain" > ./github-subdomains.txt 2>/dev/null
+    echo -e " \033[1;32mDone!\033[0m"
+    
+    echo -n -e "[*] Running Assetfinder......"
+    assetfinder --subs-only "$domain" > ./assetfinder-subdomains.txt 2>/dev/null
+    echo -e " \033[1;32mDone!\033[0m"
+    
+    echo -n -e "[*] Fetching AbuseIPDB......"
+    curl "https://www.abuseipdb.com/whois/$domain" -s --compressed \
+    -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    -H "Accept-Language: en-US,en;q=0.5" \
+    -H "Accept-Encoding: gzip, deflate, br, zstd" \
+    -H "Alt-Used: www.abuseipdb.com" \
+    -H "Connection: keep-alive" \
+    -H "Cookie: [REDACTED]" \
+    -H "Upgrade-Insecure-Requests: 1" \
+    -H "Sec-Fetch-Dest: document" \
+    -H "Sec-Fetch-Mode: navigate" \
+    -H "Sec-Fetch-Site: none" \
+    -H "Sec-Fetch-User: ?1" \
+    -H "Priority: u=0, i" \
+    -H "TE: trailers" | grep -E "<li>\w.*</li>" | sed -E 's/<\/?li>//g' | sed -e "s/$/\.$domain/g" > ./abuseipdb-subdomains.txt
+    echo -e " \033[1;32mDone!\033[0m"
+}
+
+# Phase 2: Data Processing
+function phase2 {
+    echo -e "\n\033[1;34m[+] PHASE 2: Data Processing\033[0m"
+    echo -n -e "[*] Merging results.........."
+    cat ./*-subdomains.txt | sort -u > ./final-subdomains.txt
+    count=$(wc -l < ./final-subdomains.txt)
+    echo -e " \033[1;32mFound $count subdomains!\033[0m"
+}
+
+# Phase 3: DNS Resolution
+function phase3 {
+    echo -e "\n\033[1;34m[+] PHASE 3: DNS Resolution\033[0m"
+    echo -n -e "[*] Validating DNS records..."
+    cat ./final-subdomains.txt | dnsx -silent -a -resp | awk '{print $1}' > ./resolved-subdomains.txt 2>/dev/null
+    resolved=$(wc -l < ./resolved-subdomains.txt)
+    echo -e " \033[1;32m$records resolved!\033[0m"
+}
+
+# Phase 4: HTTP Probing
+function phase4 {
+    echo -e "\n\033[1;34m[+] PHASE 4: HTTP Probing\033[0m"
+    echo -n -e "[*] Scanning live hosts....."
+    cat ./resolved-subdomains.txt | httpx -status-code -title -tech-detect -silent > ./live-subdomains-with-status.txt 2>/dev/null
+    live=$(wc -l < ./live-subdomains-with-status.txt)
+    echo -e " \033[1;32m$live hosts alive!\033[0m"
+}
+
+# Execute all phases
+phase1
+phase2
+phase3
+phase4
+
+# =====================
+#  FINISH BANNER
+# =====================
+echo ""
+echo "███████╗██╗███╗   ██╗██╗███████╗██╗  ██╗"
+echo "██╔════╝██║████╗  ██║██║██╔════╝██║  ██║"
+echo "█████╗  ██║██╔██╗ ██║██║███████╗███████║"
+echo "██╔══╝  ██║██║╚██╗██║██║╚════██║██╔══██║"
+echo "██║     ██║██║ ╚████║██║███████║██║  ██║"
+echo "╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝"
+echo ""
+echo -e "\033[1;36m[+] Scan completed!\033[0m"
+echo -e "\033[1;37mResults saved in current directory:\033[0m"
+echo -e " - final-subdomains.txt"
+echo -e " - resolved-subdomains.txt"
+echo -e " - live-subdomains-with-status.txt"
+echo ""
+echo "           Happy hunting! - aRY4"
+echo ""
