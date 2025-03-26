@@ -103,29 +103,7 @@ The tool generates three main output files:
 2. `resolved-subdomains.txt` - Subdomains with valid DNS records
 3. `live-subdomains-with-status.txt` - Live hosts with status codes and technologies
 
-## Customization ⚙️
 
-You can customize the tool by:
-
-- Editing the curl headers in the script for AbuseIPDB
-- Adding additional subdomain enumeration tools
-- Modifying httpx flags for different scanning options
-
-## Contribution 🤝
-
-Contributions are welcome! Please open an issue or submit a pull request for any:
-
-- Bug fixes
-- Feature additions
-- Performance improvements
-
-## License 📜
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Disclaimer ⚠️
-
-This tool is intended for **legal security research and authorized penetration testing only**. The developer is not responsible for any misuse of this tool.
 
 ---
 
