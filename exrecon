@@ -3,10 +3,6 @@
 # Author: aRY4
 # GitHub: https://github.com/aRY4/exRecon
 
-# =====================
-#  CUSTOM ASCII BANNER
-# =====================
-clear
 echo ""
 echo ".d8888b. dP.  .dP 88d888b. .d8888b. .d8888b. .d8888b. 88d888b."
 echo "88ooood8  \`8bd8'  88'  \`88 88ooood8 88'  \`\"\" 88'  \`88 88'  \`88"
