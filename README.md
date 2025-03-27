@@ -95,7 +95,7 @@ cat custom_wordlist.txt | ./exrecon.sh example.com
   - Detects HTTP status codes
   - Fingerprints web technologies
 
-## Output Files 📂
+## Output Files 
 
 The tool generates three main output files:
 
