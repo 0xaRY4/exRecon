@@ -1,8 +1,8 @@
-# exRecon - Advanced Subdomain Reconnaissance Tool 🔍
+# exRecon - Advanced Subdomain Reconnaissance Tool 
 
 **exRecon** is a powerful subdomain enumeration and reconnaissance tool designed for bug bounty hunters, penetration testers, and security researchers. It automates the process of discovering subdomains and identifying live hosts with their technologies.
 
-## Features ✨
+## Features 
 
 - **Comprehensive Subdomain Enumeration** using multiple data sources
 - **DNS Validation** to filter out non-resolving domains
@@ -10,7 +10,7 @@
 - **Clean Output** with organized results
 - **Customizable** for different reconnaissance needs
 
-## Installation 🛠️
+## Installation 
 
 ### Prerequisites
 
@@ -55,7 +55,7 @@ cd exRecon
 chmod +x exrecon.sh
 ```
 
-## Usage 🚀
+## Usage 
 
 Basic usage:
 
@@ -73,7 +73,7 @@ Advanced usage:
 cat custom_wordlist.txt | ./exrecon.sh example.com
 ```
 
-## Workflow 🔄
+## Workflow 
 
 1. **Subdomain Enumeration**:
   
