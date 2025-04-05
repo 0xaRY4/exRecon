@@ -102,28 +102,3 @@ The tool generates three main output files:
 1. `final-subdomains.txt` - All unique subdomains found
 2. `resolved-subdomains.txt` - Subdomains with valid DNS records
 3. `live-subdomains-with-status.txt` - Live hosts with status codes and technologies
-
-
-
----
-
-### Sample Output Preview
-
-```
-.d8888b. dP.  .dP 88d888b. .d8888b. .d8888b. .d8888b. 88d888b. 
-88ooood8  `8bd8'  88'  `88 88ooood8 88'  `"" 88'  `88 88'  `88 
-88.  ...  .d88b.  88       88.  ... 88.  ... 88.  .88 88    88 
-`88888P' dP'  `dP dP       `88888P' `88888P' `88888P' dP    dP
-
-[+] PHASE 1: Subdomain Enumeration
-[1] Running Subfinder......... Done! (142 subs)
-[2] Running Assetfinder...... Done! (98 subs)
-[3] Running github-subdomains. Done! (73 subs)
-[4] Fetching AbuseIPDB...... Done! (15 subs)
-
-[+] Scan completed!
-Results saved in current directory:
-    - final-subdomains.txt
-    - resolved-subdomains.txt
-    - live-subdomains-with-status.txt
-```
