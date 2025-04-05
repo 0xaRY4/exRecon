@@ -33,15 +33,15 @@ fi
 # Phase 1: Subdomain Enumeration
 function phase1 {
     echo -e "\n\033[1;34m[+] PHASE 1: Subdomain Enumeration\033[0m"
-    
+    sleep 1;
     echo -n -e "[*] Running Subfinder........."
     subfinder -d "$domain" > "$output_dir/subfinder-subdomains.txt" 2>/dev/null
     echo -e " \033[1;32mDone!\033[0m"
-    
+    sleep 1;
     echo -n -e "[*] Running Assetfinder......"
     assetfinder --subs-only "$domain" > "$output_dir/assetfinder-subdomains.txt" 2>/dev/null
     echo -e " \033[1;32mDone!\033[0m"
-    
+    sleep 1;
     echo -n -e "[*] Fetching AbuseIPDB......"
     curl "https://www.abuseipdb.com/whois/$domain" -s --compressed \
     -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
@@ -58,6 +58,7 @@ function phase1 {
     -H "Sec-Fetch-User: ?1" \
     -H "Priority: u=0, i" \
     -H "TE: trailers" | grep -E "<li>\w.*</li>" | sed -E 's/<\/?li>//g' | sed -e "s/$/\.$domain/g" > "$output_dir/abuseipdb-subdomains.txt"
+    sleep 2;
     echo -e " \033[1;32mDone!\033[0m"
 }
 
@@ -66,6 +67,7 @@ function phase2 {
     echo -e "\n\033[1;34m[+] PHASE 2: Data Processing\033[0m"
     echo -n -e "[*] Merging results.........."
     cat "$output_dir"/*-subdomains.txt | sort -u > "$output_dir/final-subdomains.txt"
+    sleep 2;
     count=$(wc -l < "$output_dir/final-subdomains.txt")
     echo -e " \033[1;32mFound $count subdomains!\033[0m"
 }
@@ -74,6 +76,7 @@ function phase2 {
 function phase3 {
     echo -e "\n\033[1;34m[+] PHASE 3: DNS Resolution\033[0m"
     echo -n -e "[*] Validating DNS records..."
+    sleep 2;
     cat "$output_dir/final-subdomains.txt" | dnsx -silent -a -resp | awk '{print $1}' > "$output_dir/resolved-subdomains.txt" 2>/dev/null
     resolved=$(wc -l < "$output_dir/resolved-subdomains.txt")
     echo -e " \033[1;32m$resolved resolved!\033[0m"
@@ -83,9 +86,21 @@ function phase3 {
 function phase4 {
     echo -e "\n\033[1;34m[+] PHASE 4: HTTP Probing\033[0m"
     echo -n -e "[*] Scanning live hosts....."
+    sleep 2;
     cat "$output_dir/resolved-subdomains.txt" | httpx -status-code -title -tech-detect -silent > "$output_dir/live-subdomains-with-status.txt" 2>/dev/null
     live=$(wc -l < "$output_dir/live-subdomains-with-status.txt")
     echo -e " \033[1;32m$live hosts alive!\033[0m"
+}
+
+# Phase 5: Extract 2XX,3XX,4XX,5XX 
+function phase5 {
+    echo -e "\n\033[1;34m[+] PHASE 5: Filtering HTTP status codes.....\033[0m"
+    sleep 2;
+    mkdir -p "$output_dir/extracted/"
+    grep "2[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/2XX-subdomains.txt" 2>/dev/null
+    grep "3[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/3XX-subdomains.txt" 2>/dev/null
+    grep "4[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/4XX-subdomains.txt" 2>/dev/null
+    grep "5[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/5XX-subdomains.txt" 2>/dev/null
 }
 
 
@@ -94,6 +109,7 @@ phase1
 phase2
 phase3
 phase4
+phase5
 
 # Display finish banner
 echo ""
@@ -106,7 +122,7 @@ echo -e "\033[1;37mResults saved in directory:\033[0m"
 echo -e " - $output_dir/final-subdomains.txt"
 echo -e " - $output_dir/resolved-subdomains.txt"
 echo -e " - $output_dir/live-subdomains-with-status.txt"
-echo -e " - $output_dir/clean-http-status.txt"
+echo -e " - $output_dir/extracted/"
 echo ""
 echo "           Happy hunting! - aRY4"
 echo ""
