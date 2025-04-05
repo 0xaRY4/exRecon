@@ -1,4 +1,4 @@
-# exRecon - Advanced Subdomain Reconnaissance Tool 
+# exrecon - external subdomain reconnaissance automation 
 
 **exRecon** is a powerful subdomain enumeration and reconnaissance tool designed for bug bounty hunters, penetration testers, and security researchers. It automates the process of discovering subdomains and identifying live hosts with their technologies.
 
