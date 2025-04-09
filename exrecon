@@ -3,7 +3,6 @@
 # Author: aRY4
 # GitHub: https://github.com/aRY4/exRecon
 
-# Display start banner
 echo ""
 echo "___      __   ___  __   __       "
 echo "|__  \_/ |__) |__  /  \` /  \ |\ | "
@@ -12,7 +11,7 @@ echo ""
 echo "                          by aRY4"
 echo "------------------------------------------------------------"
 
-# Check if target domain is provided
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <domain>"
     exit 1
@@ -21,14 +20,11 @@ fi
 domain=$1
 output_dir="$domain"
 
-# Create output directory if it doesn't exist
+
 if [ ! -d "$output_dir" ]; then
     mkdir -p "$output_dir"
 fi
 
-# =====================
-#  RECON PHASES
-# =====================
 
 # Phase 1: Subdomain Enumeration
 function phase1 {
@@ -62,7 +58,7 @@ function phase1 {
     echo -e " \033[1;32mDone!\033[0m"
 }
 
-# Phase 2: Data Processing
+# Phase 2: Merging results
 function phase2 {
     echo -e "\n\033[1;34m[+] PHASE 2: Data Processing\033[0m"
     echo -n -e "[*] Merging results.........."
@@ -92,26 +88,11 @@ function phase4 {
     echo -e " \033[1;32m$live hosts alive!\033[0m"
 }
 
-# Phase 5: Extract 2XX,3XX,4XX,5XX 
-function phase5 {
-    echo -e "\n\033[1;34m[+] PHASE 5: Filtering HTTP status codes.....\033[0m"
-    sleep 2;
-    mkdir -p "$output_dir/extracted/"
-    grep "2[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/2XX-subdomains.txt" 2>/dev/null
-    grep "3[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/3XX-subdomains.txt" 2>/dev/null
-    grep "4[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/4XX-subdomains.txt" 2>/dev/null
-    grep "5[0-9][0-9]" "$output_dir/live-subdomains-with-status.txt" | cut -d " " -f 1 | sort -u > "$output_dir/extracted/5XX-subdomains.txt" 2>/dev/null
-}
-
-
-# Execute all phases
 phase1
 phase2
 phase3
 phase4
-phase5
 
-# Display finish banner
 echo ""
 echo "___           __       "
 echo "|__  | |\ | | /__\` |__| "
@@ -122,7 +103,6 @@ echo -e "\033[1;37mResults saved in directory:\033[0m"
 echo -e " - $output_dir/final-subdomains.txt"
 echo -e " - $output_dir/resolved-subdomains.txt"
 echo -e " - $output_dir/live-subdomains-with-status.txt"
-echo -e " - $output_dir/extracted/"
 echo ""
 echo "           Happy hunting! - aRY4"
 echo ""
