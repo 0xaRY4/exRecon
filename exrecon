@@ -56,6 +56,10 @@ function phase1 {
     -H "TE: trailers" | grep -E "<li>\w.*</li>" | sed -E 's/<\/?li>//g' | sed -e "s/$/\.$domain/g" > "$output_dir/abuseipdb-subdomains.txt"
     sleep 2;
     echo -e " \033[1;32mDone!\033[0m"
+    sleep 1;
+    echo -n -e "[*] Querying crt.sh........."
+    curl -s "https://crt.sh/?q=$domain" | grep -oP '<TD>\K[^<]*(?=<\/TD>)' | sort -u > "$output_dir/crtsh-subdomains.txt" 2>/dev/null
+    echo -e " \033[1;32mDone!\033[0m"
 }
 
 # Phase 2: Merging results
