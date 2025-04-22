@@ -3,6 +3,50 @@
 # Author: aRY4
 # GitHub: https://github.com/aRY4/exRecon
 
+function show_help {
+    echo ""
+    echo "___      __   ___  __   __       "
+    echo "|__  \_/ |__) |__  /  \` /  \ |\ | "
+    echo "|___ / \ |  \ |___ \__, \__/ | \|"
+    echo ""
+    echo "                          by aRY4"
+    echo "------------------------------------------------------------"
+    echo -e "\n\033[1;36mUsage:\033[0m"
+    echo "  $0 <domain>    Scan specified domain"
+    echo "  $0 -h|--help   Show this help message"
+    echo ""
+    echo -e "\033[1;36mDescription:\033[0m"
+    echo "  Automated subdomain reconnaissance tool that performs:"
+    echo "  - Subdomain enumeration using multiple tools"
+    echo "  - DNS resolution validation"
+    echo "  - HTTP service probing"
+    echo ""
+    echo -e "\033[1;36mRequirements:\033[0m"
+    echo "  - subfinder, assetfinder, chaos, dnsx, httpx"
+    echo ""
+    echo -e "\033[1;36mExamples:\033[0m"
+    echo "  $0 example.com"
+    echo "  $0 --help"
+    echo ""
+    exit 0
+}
+
+# Check for help argument
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+fi
+
+# Validate input
+if [ -z "$1" ]; then
+    echo -e "\n\033[1;31mError: No domain specified!\033[0m"
+    echo -e "Use $0 -h for help\n"
+    exit 1
+fi
+
+domain=$1
+output_dir="$domain"
+
+# Main execution starts here
 echo ""
 echo "___      __   ___  __   __       "
 echo "|__  \_/ |__) |__  /  \` /  \ |\ | "
@@ -11,20 +55,9 @@ echo ""
 echo "                          by aRY4"
 echo "------------------------------------------------------------"
 
-
-if [ -z "$1" ]; then
-    echo "Usage: $0 <domain>"
-    exit 1
-fi
-
-domain=$1
-output_dir="$domain"
-
-
 if [ ! -d "$output_dir" ]; then
     mkdir -p "$output_dir"
 fi
-
 
 # Phase 1: Subdomain Enumeration
 function phase1 {
@@ -36,6 +69,10 @@ function phase1 {
     sleep 1;
     echo -n -e "[*] Running Assetfinder......"
     assetfinder --subs-only "$domain" > "$output_dir/assetfinder-subdomains.txt" 2>/dev/null
+    echo -e " \033[1;32mDone!\033[0m"
+    sleep 1;
+    echo -n -e "[*] Running Chaos............"
+    chaos -d "$domain" -silent > "$output_dir/chaos-subdomains.txt" 2>/dev/null
     echo -e " \033[1;32mDone!\033[0m"
     sleep 1;
     echo -n -e "[*] Fetching AbuseIPDB......"
@@ -107,6 +144,7 @@ echo -e "\033[1;37mResults saved in directory:\033[0m"
 echo -e " - $output_dir/final-subdomains.txt"
 echo -e " - $output_dir/resolved-subdomains.txt"
 echo -e " - $output_dir/live-subdomains-with-status.txt"
+echo -e " - $output_dir/chaos-subdomains.txt"
 echo ""
 echo "           Happy hunting! - aRY4"
 echo ""
