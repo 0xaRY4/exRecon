@@ -19,13 +19,14 @@ go install -v github.com/projectdiscovery/chaos-client/cmd/chaos@latest
 
 2. Configure Chaos:
 ```bash
-export CHAOS_KEY="your-api-key-here"  # Get from https://chaos.projectdiscovery.io
+echo "export PDCP_API_KEY=<your-api-key-here>" >> ~/.bashrc  # Get from https://chaos.projectdiscovery.io
+source ~/.bashrc
 ```
 
 3. Get exRecon:
 ```bash
 git clone https://github.com/aRY4/exRecon.git && cd exRecon
-chmod +x exrecon.sh
+chmod +x exrecon
 ```
 
 > **Note**: Chaos requires a free API key from ProjectDiscovery for subdomain enumeration.
